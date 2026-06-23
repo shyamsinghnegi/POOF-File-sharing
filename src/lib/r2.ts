@@ -1,4 +1,4 @@
-import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
+import { S3Client, PutObjectCommand, GetObjectCommand, DeleteObjectCommand } from "@aws-sdk/client-s3";
 
 const r2Client = new S3Client({
     region: "auto",
@@ -16,6 +16,25 @@ export async function uploadToR2(key: string, body: Buffer, contentType: string)
             Key: key,
             Body: body,
             ContentType: contentType,
+        })
+    );
+}
+
+export async function getFromR2(key: string): Promise<ReadableStream> {
+    const response = await r2Client.send(
+        new GetObjectCommand({
+            Bucket: process.env.R2_BUCKET_NAME!,
+            Key: key,
+        })
+    );
+    return response.Body!.transformToWebStream();
+}
+
+export async function deleteFromR2(key: string) {
+    await r2Client.send(
+        new DeleteObjectCommand({
+            Bucket: process.env.R2_BUCKET_NAME!,
+            Key: key,
         })
     );
 }

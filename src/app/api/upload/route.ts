@@ -1,10 +1,16 @@
 import { NextResponse } from "next/server";
-import { createHash } from "crypto";
+import { randomUUID, createHash } from "crypto";
 import { uploadRatelimit } from "@/lib/ratelimit";
 import { checkHashWithVirusTotal, VirusTotalVerdict } from "@/lib/virustotal";
 import { uploadToR2 } from "@/lib/r2";
+import { getFileByHash, insertFile, insertShare, getTotalStorageUsed } from "@/lib/d1";
+
+
 //File Validation and values 
 const MAX_FILE_SIZE = 1024 * 1024 * 1024; //1GB LIMIT
+const STORAGE_BUDGET = 10 * 1024 * 1024 * 1024; // 10GB total budget
+const KILL_SWITCH_THRESHOLD = STORAGE_BUDGET * 0.8; // 8GB — reject uploads past this
+
 const BLOCKED_EXTENSIONS = [".exe", ".bat", ".sh", ".msi", ".ps1", ".vbs"];
 
 export async function POST(request: Request) {
@@ -31,9 +37,16 @@ export async function POST(request: Request) {
     if (isBlocked) {
         return NextResponse.json({ error: "File type not allowed" }, { status: 415 });
     }
-    const buffer = Buffer.from (await file.arrayBuffer())
+
+    const totalstorageused = await getTotalStorageUsed();
+    if (totalstorageused + file.size > KILL_SWITCH_THRESHOLD) {
+        return (NextResponse.json({ error: "Storage limit reached. Try again later." }, { status: 503 }));
+    }
+
+    const buffer = Buffer.from(await file.arrayBuffer())
     const hash = createHash("sha256").update(buffer).digest("hex");
 
+    //virus verdict 
     let verdict: VirusTotalVerdict = "Unknown";
     try {
         verdict = await checkHashWithVirusTotal(hash);
@@ -45,10 +58,24 @@ export async function POST(request: Request) {
     if (verdict === "malicious") {
         return NextResponse.json({ error: "File flagged as malicious" }, { status: 403 });
     }
-    
-    await uploadToR2(hash, buffer, file.type);
-    await uploadRatelimit.limit(ip);
-    return NextResponse.json({ message: "File passed the Initial validation", name: file.name, size: file.size, hash: hash });
 
+    //Existing File check 
+    const existingFile = await getFileByHash(hash);
+
+    if (!existingFile) {
+        await uploadToR2(hash, buffer, file.type);
+        await insertFile(hash, hash, file.size, file.type);
+    }
+
+    //File information upload
+    const shareId = randomUUID();
+    const createdAt = Date.now()
+    const expiresAt = createdAt + 24 * 60 * 60 * 1000;
+
+    await insertShare(shareId, hash, file.name, createdAt, expiresAt);
+
+    await uploadRatelimit.limit(ip);
+
+    return NextResponse.json({ message: "Upload successful", shareId });
 }
 
