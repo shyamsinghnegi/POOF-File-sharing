@@ -1,0 +1,28 @@
+.header{
+    display:flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px 30px;
+}
+
+.wordmark{
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+}
+
+.toggle {
+    background: transparent;
+    border: 1.5px solid var(--border);
+    border-radius: 5px;
+    color: var(--fg);
+    width: 34px;
+    height: 34px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-family: var(--font-space-mono), monospace;
+}
