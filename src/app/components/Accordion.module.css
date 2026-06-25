@@ -1,0 +1,63 @@
+.accordion {
+    border-top: 2px dashed var(--border);
+}
+
+.item {
+    border-bottom: 2px dashed var(--border);
+}
+
+.question {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    background: transparent;
+    border: none;
+    color: var(--fg);
+    font-weight: 700;
+    font-size: clamp(15px, 2vw, 18px);
+    text-align: left;
+    padding: 24px 4px;
+    cursor: pointer;
+    font-family: var(--font-space-mono), monospace;
+}
+
+.chevron {
+    flex: none;
+    display: inline-flex;
+    transition: transform 0.3s ease;
+    transform: rotate(0deg);
+}
+
+.chevronOpen {
+    flex: none;
+    display: inline-flex;
+    transition: transform 0.3s ease;
+    transform: rotate(180deg);
+}
+
+.panel {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.34s ease;
+}
+
+.panelOpen {
+    display: grid;
+    grid-template-rows: 1fr;
+    transition: grid-template-rows 0.34s ease;
+}
+
+.panelInner {
+    overflow: hidden;
+}
+
+.answer {
+    font-size: 15px;
+    line-height: 1.65;
+    color: var(--muted);
+    margin: 0;
+    padding: 0 4px 26px;
+    max-width: 64ch;
+}

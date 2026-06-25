@@ -26,3 +26,24 @@
     font-size: 14px;
     font-family: var(--font-space-mono), monospace;
 }
+
+.headerFaq{
+    display:flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 22px 30px;
+    border-bottom: 2px solid var(--border);
+}
+
+.right{
+    display:flex;
+    align-items: center;
+    gap: 22px;
+}
+
+.backLink{
+    font-size: 13px;
+    letter-spacing:0.04em;
+    text-transform: uppercase;
+    color: var(--muted);
+}

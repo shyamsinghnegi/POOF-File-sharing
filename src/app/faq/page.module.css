@@ -1,0 +1,81 @@
+.page {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.body {
+    flex: 1;
+    display: flex;
+    align-items: stretch;
+}
+
+.sidebar {
+    width: 240px;
+    flex: none;
+    border-right: 2px dashed var(--border);
+    padding: 34px 24px;
+}
+
+.sidebarLabel {
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 14px;
+}
+
+.sidebarItem {
+    display: block;
+    font-size: 14px;
+    padding: 9px 12px;
+    color: var(--fg);
+    margin: 26px 0 14px;
+}
+
+.sidebarItemActive {
+    font-size: 14px;
+    font-weight: 700;
+    padding: 9px 12px;
+    border: 2px solid var(--border);
+    background: var(--soft);
+}
+
+.main {
+    flex: 1;
+    padding: 48px clamp(24px, 6vw, 90px) 90px;
+    max-width: 1000px;
+}
+
+.eyebrow {
+    font-size: 12px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--muted);
+}
+
+.title {
+    font-weight: 700;
+    font-size: clamp(40px, 7vw, 64px);
+    letter-spacing: -0.02em;
+    margin: 10px 0 0;
+}
+
+.subtitle {
+    font-size: 16px;
+    color: var(--muted);
+    margin: 14px 0 44px;
+}
+
+.backRow {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 40px;
+    font-size: 13px;
+    color: var(--muted);
+}
+
+.backHome {
+    color: var(--fg);
+    font-weight: 700;
+}

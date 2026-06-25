@@ -1,0 +1,15 @@
+.copyButton {
+    width: 100%;
+    max-width: 480px;
+    background: transparent;
+    color: var(--fg);
+    border: 2px solid var(--border);
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 14px 30px;
+    cursor: pointer;
+    margin-top: 14px;
+    font-family: var(--font-space-mono), monospace;
+}

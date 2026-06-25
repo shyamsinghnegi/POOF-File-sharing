@@ -44,7 +44,7 @@ export async function getTotalStorageUsed() {
 
 export async function getShareById(shareId: string) {
     const results = await queryD1(
-        `SELECT shares.filename, shares.expires_at, files.size, files.content_type, files.r2_key
+        `SELECT shares.filename, shares.created_at, shares.expires_at, files.size, files.content_type, files.r2_key
          FROM shares
          JOIN files ON shares.file_hash = files.hash
          WHERE shares.share_id = ?`,
