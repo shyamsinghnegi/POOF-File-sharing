@@ -25,9 +25,9 @@ function formatUploadedDate(timestamp: number): string {
 
 export default async function SharePage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
-    const share = await getShareById(id);
+    const files = await getShareById(id);
     const now = getCurrentTime();
-    const isExpired = !share || share.expires_at < now;
+    const isExpired = files.length === 0 || files[0].expires_at < now;
 
     if (isExpired) {
         return (<div className={styles.page}>
@@ -38,29 +38,34 @@ export default async function SharePage({ params }: { params: Promise<{ id: stri
         </div>
         );
     }
+
+    const totalSize = files.reduce((sum, file) => sum + file.size, 0);
+
     return (
         <div className={styles.page}>
             <Header />
             <main className={styles.main}>
-                <h1 className={styles.title}>Download your file</h1>
+                <h1 className={styles.title}>Download your file{files.length > 1 ? "s" : ""}</h1>
                 <p className={styles.subtitle}>Shared via poof.</p>
 
                 <div className={styles.card}>
+                    {files.map((file) => (
+                        <div className={styles.row} key={file.hash}>
+                            <span className={styles.label}>{file.filename}</span>
+                            <span className={styles.value}>{formatBytes(file.size)}</span>
+                        </div>
+                    ))}
                     <div className={styles.row}>
-                        <span className={styles.label}>Name:</span>
-                        <span className={styles.value}>{share.filename}</span>
-                    </div>
-                    <div className={styles.row}>
-                        <span className={styles.label}>Size:</span>
-                        <span className={styles.value}>{formatBytes(share.size)}</span>
+                        <span className={styles.label}>Total size:</span>
+                        <span className={styles.value}>{formatBytes(totalSize)}</span>
                     </div>
                     <div className={styles.row}>
                         <span className={styles.label}>Uploaded:</span>
-                        <span className={styles.value}>{formatUploadedDate(share.created_at)}</span>
+                        <span className={styles.value}>{formatUploadedDate(files[0].created_at)}</span>
                     </div>
                     <div className={styles.row}>
                         <span className={styles.label}>Expires:</span>
-                        <span className={styles.value}>{formatTimeRemaining(share.expires_at, now)}</span>
+                        <span className={styles.value}>{formatTimeRemaining(files[0].expires_at, now)}</span>
                     </div>
                 </div>
 

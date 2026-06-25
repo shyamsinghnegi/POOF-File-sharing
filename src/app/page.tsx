@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Header from "./components/Header";
 import styles from "./page.module.css";
-
+import UploadForm from "./components/UploadForm";
 export default function Home() {
   return (
     <div className={styles.page}>
@@ -14,10 +14,11 @@ export default function Home() {
           Fast, secure file sharing that&apos;s{" "}
           <span className={styles.highlight}>gone in 24h</span>
         </p>
-        <div className={styles.buttonRow}>
+        {/* <div className={styles.buttonRow}>
           <button className={styles.primaryButton}>Upload Files</button>
           <button className={styles.secondaryButton}>Remote Upload</button>
-        </div>
+        </div> */}
+        <UploadForm />
         <p className={styles.meta}>NO SIGN-UP · ENCRYPTED · UP TO 1GB </p>
         <div className={styles.rule} />
       </main>

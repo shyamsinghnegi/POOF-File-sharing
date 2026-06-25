@@ -20,15 +20,21 @@ export async function uploadToR2(key: string, body: Buffer, contentType: string)
     );
 }
 
-export async function getFromR2(key: string): Promise<ReadableStream> {
+export async function getFromR2(key: string, range?: string) {
     const response = await r2Client.send(
         new GetObjectCommand({
             Bucket: process.env.R2_BUCKET_NAME!,
             Key: key,
+            Range: range,
         })
     );
-    return response.Body!.transformToWebStream();
+    return {
+        body: response.Body!.transformToWebStream(),
+        contentRange: response.ContentRange,
+        contentLength: response.ContentLength,
+    };
 }
+
 
 export async function deleteFromR2(key: string) {
     await r2Client.send(
@@ -38,3 +44,4 @@ export async function deleteFromR2(key: string) {
         })
     );
 }
+

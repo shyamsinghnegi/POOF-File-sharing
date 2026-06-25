@@ -11,12 +11,21 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
         return NextResponse.json({ error: "This link is gone" }, { status: 404 });
     }
 
-    const body = await getFromR2(share.r2_key);
+    const range = request.headers.get("range") ?? undefined;
+    const { body, contentRange, contentLength } = await getFromR2(share.r2_key, range);
 
-    return new NextResponse(body, {
-        headers: {
-            "Content-Type": share.content_type,
-            "Content-Disposition": `attachment; filename="${share.filename}"`,
-        },
-    });
+    const headers: Record<string, string> = {
+        "Content-Type": share.content_type,
+        "Content-Disposition": `attachment; filename="${share.filename}"`,
+        "Accept-Ranges": "bytes",
+    };
+
+    if (range && contentRange) {
+        headers["Content-Range"] = contentRange;
+        headers["Content-Length"] = String(contentLength);
+        return new NextResponse(body, { status: 206, headers });
+    }
+
+    headers["Content-Length"] = String(share.size);
+    return new NextResponse(body, { status: 200, headers });
 }
