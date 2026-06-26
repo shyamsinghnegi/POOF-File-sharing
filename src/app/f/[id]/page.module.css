@@ -13,9 +13,23 @@
     text-align: center;
 }
 
+@keyframes fadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(16px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 .title {
     font-weight: 700;
     font-size: clamp(28px, 4vw, 40px);
+    opacity: 0;
+    animation: fadeUp 0.4s ease forwards;
+    animation-delay: 0.06s;
 }
 
 .subtitle {
@@ -23,6 +37,9 @@
     font-size: 14px;
     margin-top: 10px;
     margin-bottom: 40px;
+    opacity: 0;
+    animation: fadeUp 0.4s ease forwards;
+    animation-delay: 0.15s;
 }
 
 .card {
@@ -30,6 +47,9 @@
     max-width: 480px;
     border: 2px dashed var(--border);
     text-align: left;
+    opacity: 0;
+    animation: fadeUp 0.4s ease forwards;
+    animation-delay: 0.25s;
 }
 
 .row {
@@ -64,6 +84,9 @@
     color: var(--muted);
     line-height: 1.6;
     margin: 24px 0;
+    opacity: 0;
+    animation: fadeUp 0.4s ease forwards;
+    animation-delay: 0.45s;
 }
 
 .downloadButton {
@@ -80,6 +103,9 @@
     padding: 14px 30px;
     cursor: pointer;
     font-family: var(--font-space-mono), monospace;
+    opacity: 0;
+    animation: fadeUp 0.4s ease forwards;
+    animation-delay: 0.55s;
 }
 
 .gone {
@@ -93,6 +119,9 @@
     width: 100%;
     max-width: 480px;
     margin-top: 16px;
+    opacity: 0;
+    animation: fadeUp 0.4s ease forwards;
+    animation-delay: 0.35s;
 }
 
 .statBox {

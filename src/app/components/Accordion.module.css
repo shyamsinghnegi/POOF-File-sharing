@@ -1,5 +1,19 @@
+@keyframes fadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(16px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 .accordion {
     border-top: 2px dashed var(--border);
+    opacity: 0;
+    animation: fadeUp 0.4s ease forwards;
+    animation-delay: 0.35s;
 }
 
 .item {

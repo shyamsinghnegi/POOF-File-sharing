@@ -7,7 +7,6 @@ export default function Home() {
     <div className={styles.page}>
       <Header />
       <main className={styles.main}>
-        <div className={styles.rule} />
         <p className={styles.eyebrow}>Established 2026</p>
         <h1 className={styles.wordmark}>poof</h1>
         <p className={styles.tagline}>
@@ -20,7 +19,6 @@ export default function Home() {
         </div> */}
         <UploadForm />
         <p className={styles.meta}>NO SIGN-UP · ENCRYPTED · UP TO 1GB </p>
-        <div className={styles.rule} />
       </main>
       <footer className={styles.footer}>
         <Link href="/faq" className={styles.faqLink}>FAQ →</Link>

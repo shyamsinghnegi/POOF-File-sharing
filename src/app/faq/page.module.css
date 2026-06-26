@@ -15,6 +15,9 @@
     flex: none;
     border-right: 2px dashed var(--border);
     padding: 34px 24px;
+    opacity: 0;
+    animation: fadeUp 0.4s ease forwards;
+    animation-delay: 0.06s;
 }
 
 .sidebarLabel {
@@ -47,11 +50,25 @@
     max-width: 1000px;
 }
 
+@keyframes fadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(16px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 .eyebrow {
     font-size: 12px;
     letter-spacing: 0.3em;
     text-transform: uppercase;
     color: var(--muted);
+    opacity: 0;
+    animation: fadeUp 0.4s ease forwards;
+    animation-delay: 0.06s;
 }
 
 .title {
@@ -59,12 +76,18 @@
     font-size: clamp(40px, 7vw, 64px);
     letter-spacing: -0.02em;
     margin: 10px 0 0;
+    opacity: 0;
+    animation: fadeUp 0.4s ease forwards;
+    animation-delay: 0.15s;
 }
 
 .subtitle {
     font-size: 16px;
     color: var(--muted);
     margin: 14px 0 44px;
+    opacity: 0;
+    animation: fadeUp 0.4s ease forwards;
+    animation-delay: 0.25s;
 }
 
 .backRow {
@@ -78,4 +101,14 @@
 .backHome {
     color: var(--fg);
     font-weight: 700;
+}
+
+@media (max-width: 640px) {
+    .sidebar {
+        display: none;
+    }
+
+    .main {
+        padding: 32px 20px 60px;
+    }
 }

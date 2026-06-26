@@ -1,4 +1,5 @@
-import { S3Client, PutObjectCommand, GetObjectCommand, DeleteObjectCommand } from "@aws-sdk/client-s3";
+import { S3Client, PutObjectCommand, GetObjectCommand, DeleteObjectCommand, HeadObjectCommand } from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { Readable } from "stream";
 
 const r2Client = new S3Client({
@@ -45,5 +46,29 @@ export async function deleteFromR2(key: string) {
             Key: key,
         })
     );
+}
+
+export async function getPresignedUploadUrl(key: string, contentType: string, contentLength: number) {
+    const command = new PutObjectCommand({
+        Bucket: process.env.R2_BUCKET_NAME!,
+        Key: key,
+        ContentType: contentType,
+        ContentLength: contentLength,
+    });
+    return await getSignedUrl(r2Client, command, { expiresIn: 600 });
+}
+
+export async function headObjectFromR2(key: string) {
+    try {
+        const response = await r2Client.send(
+            new HeadObjectCommand({
+                Bucket: process.env.R2_BUCKET_NAME!,
+                Key: key,
+            })
+        );
+        return { exists: true, size: response.ContentLength ?? 0 };
+    } catch {
+        return { exists: false, size: 0 };
+    }
 }
 

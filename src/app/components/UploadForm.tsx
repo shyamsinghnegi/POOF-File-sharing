@@ -20,6 +20,13 @@ function formatBytes(bytes: number): string {
     return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
+async function hashFile(file: File): Promise<string> {
+    const buffer = await file.arrayBuffer();
+    const hashBuffer = await crypto.subtle.digest("SHA-256", buffer);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
+}
+
 export default function UploadForm() {
     const [stage, setStage] = useState<Stage>("idle");
     const [files, setFiles] = useState<FileEntry[]>([]);
@@ -94,17 +101,59 @@ export default function UploadForm() {
         setStage("uploading");
         setErrorMessage(null);
 
-        const formData = new FormData();
-        for (const file of pickedFiles) {
-            formData.append("file", file);
-        }
-
         try {
-            const response = await fetch("/api/upload", { method: "POST", body: formData });
-            const data = await response.json();
+            const hashes = await Promise.all(pickedFiles.map((f) => hashFile(f)));
 
-            if (!response.ok) {
-                setErrorMessage(data.error ?? "Upload failed.");
+            const initResponse = await fetch("/api/upload/init", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    files: pickedFiles.map((f, i) => ({
+                        filename: f.name,
+                        size: f.size,
+                        contentType: f.type,
+                        hash: hashes[i],
+                    })),
+                }),
+            });
+            const initData = await initResponse.json();
+
+            if (!initResponse.ok) {
+                setErrorMessage(initData.error ?? "Upload failed.");
+                setShowErrorToast(true);
+                setStage("error");
+                return;
+            }
+
+            await Promise.all(
+                initData.results.map((result: { needsUpload: boolean; presignedUrl?: string; hash: string }, i: number) => {
+                    if (!result.needsUpload || !result.presignedUrl) return Promise.resolve();
+                    return fetch(result.presignedUrl, {
+                        method: "PUT",
+                        headers: { "Content-Type": pickedFiles[i].type },
+                        body: pickedFiles[i],
+                    });
+                })
+            );
+
+            setFakeProgress(90);
+
+            const completeResponse = await fetch("/api/upload/complete", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    files: pickedFiles.map((f, i) => ({
+                        filename: f.name,
+                        hash: hashes[i],
+                        contentType: f.type,
+                        needsUpload: initData.results[i].needsUpload,
+                    })),
+                }),
+            });
+            const completeData = await completeResponse.json();
+
+            if (!completeResponse.ok) {
+                setErrorMessage(completeData.error ?? "Upload failed.");
                 setShowErrorToast(true);
                 setStage("error");
                 return;
@@ -112,21 +161,21 @@ export default function UploadForm() {
 
             setFiles((current) =>
                 current.map((f) => {
-                    const result = data.results?.find((r: { filename: string }) => r.filename === f.name);
+                    const result = completeData.results?.find((r: { filename: string }) => r.filename === f.name);
                     return result ? { ...f, status: result.status, reason: result.reason } : f;
                 })
             );
 
             setFakeProgress(100);
 
-            if (!data.shareId) {
+            if (!completeData.shareId) {
                 setErrorMessage("All files failed validation.");
                 setShowErrorToast(true);
                 setStage("error");
                 return;
             }
 
-            setShareId(data.shareId);
+            setShareId(completeData.shareId);
             setStage("done");
         } catch {
             setErrorMessage("Something went wrong. Please try again.");
