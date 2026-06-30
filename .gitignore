@@ -46,3 +46,4 @@ next-env.d.ts
 # design reference / docs (not part of the app)
 design/
 *.md
+!README.md
